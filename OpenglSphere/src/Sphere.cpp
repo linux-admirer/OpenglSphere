@@ -44,7 +44,7 @@ std::vector<Triangle> Sphere::getCoordinates(float radius, float delta_d)
 		pointTop.z = zcoordNext;
 
 		Triangle triangle;
-		for (; azimuth_d < 360; azimuth_d += delta_d)
+		for (; azimuth_d < 180; azimuth_d += delta_d)
 		{
 			double azimuthNextRad = degreeToRadian(azimuth_d + delta_d);
 			Point pointNext;
@@ -65,6 +65,16 @@ std::vector<Triangle> Sphere::getCoordinates(float radius, float delta_d)
 
 			triangle.vertices[0] = pointTopNext;
 			triangles.push_back(triangle);
+
+			/*---------------------------------*/
+			// 360 - azimuth
+			triangle.negativeY();
+			triangles.push_back(triangle);
+
+			triangle.vertices[0] = pointCur;
+			triangle.negativeY();
+			triangles.push_back(triangle);
+			/*---------------------------------*/
 
 			pointCur = pointNext;
 			pointTop = pointTopNext;

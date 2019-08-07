@@ -1,5 +1,6 @@
 #include "Sphere.h"
 
+#include <algorithm>
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <math.h>
@@ -9,6 +10,30 @@ static const double pi180 = M_PI / 180;
 double degreeToRadian(float degrees)
 {
 	return (degrees * pi180);
+}
+
+void negateY(Triangle& triangle)
+{
+	auto& vertices = triangle.vertices;
+	vertices[0].y = -vertices[0].y;
+	vertices[1].y = -vertices[1].y;
+	vertices[2].y = -vertices[2].y;
+}
+
+void negateX(Triangle& triangle)
+{
+	auto& vertices = triangle.vertices;
+	vertices[0].x = -vertices[0].x;
+	vertices[1].x = -vertices[1].x;
+	vertices[2].x = -vertices[2].x;
+}
+
+void swapXY(Triangle& triangle)
+{
+	auto& vertices = triangle.vertices;
+	std::swap(vertices[0].x, vertices[0].y);
+	std::swap(vertices[0].x, vertices[0].y);
+	std::swap(vertices[0].x, vertices[0].y);
 }
 
 std::vector<Triangle> Sphere::getCoordinates(float radius, float delta_d)
@@ -44,7 +69,7 @@ std::vector<Triangle> Sphere::getCoordinates(float radius, float delta_d)
 		pointTop.z = zcoordNext;
 
 		Triangle triangle;
-		for (; azimuth_d < 180; azimuth_d += delta_d)
+		for (; azimuth_d < 90; azimuth_d += delta_d)
 		{
 			double azimuthNextRad = degreeToRadian(azimuth_d + delta_d);
 			Point pointNext;
@@ -66,22 +91,34 @@ std::vector<Triangle> Sphere::getCoordinates(float radius, float delta_d)
 			triangle.vertices[0] = pointTopNext;
 			triangles.push_back(triangle);
 
-			/*---------------------------------*/
-			// 360 - azimuth
-			triangle.negativeY();
-			triangles.push_back(triangle);
-
-			triangle.vertices[0] = pointCur;
-			triangle.negativeY();
-			triangles.push_back(triangle);
-			/*---------------------------------*/
-
 			pointCur = pointNext;
 			pointTop = pointTopNext;
 			azimuthCurRad = azimuthNextRad;
 		}
 		polarCur = polarNext;
 		zcoordCur = zcoordNext;
+	}
+
+	auto size = triangles.size();
+	Triangle triangle;
+	for (size_t i = 0; i < size; ++i)
+	{
+		// 180 + theta
+		triangle = triangles[i];
+		negateX(triangle);
+		negateY(triangle);
+		triangles.push_back(triangle);
+
+		// 90 + theta
+		triangle = triangles[i];
+		swapXY(triangle);
+		negateY(triangle);
+		triangles.push_back(triangle);
+
+		// 270 + theta
+		negateX(triangle);
+		negateY(triangle);
+		triangles.push_back(triangle);
 	}
 
 	return triangles;

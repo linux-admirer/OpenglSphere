@@ -17,13 +17,6 @@ struct Point
 
 struct Triangle
 {
-	void negativeY()
-	{
-		vertices[0].y = -vertices[0].y;
-		vertices[1].y = -vertices[1].y;
-		vertices[2].y = -vertices[2].y;
-	}
-
 	Point vertices[3];
 };
 #pragma pack(pop)
